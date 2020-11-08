@@ -23,10 +23,9 @@
   "homepage": "https://github.com/WilhelmYakunin/frontend-project-lvl3#readme",
   "devDependencies": {
     "css-loader": "^4.3.0",
-    "eslint": "^7.8.1",
+    "eslint": "^7.12.1",
     "eslint-config-airbnb-base": "^14.2.0",
-    "eslint-plugin-import": "^2.22.0",
-    "html-webpack-plugin": "^4.4.1",
+    "eslint-plugin-import": "^2.22.1",
     "style-loader": "^1.2.1",
     "webpack": "^4.44.1",
     "webpack-cli": "^3.3.12",
@@ -35,11 +34,13 @@
   "dependencies": {
     "axios": "^0.20.0",
     "bootstrap": "^4.5.2",
+    "html-webpack-plugin": "^4.4.1",
     "i18next": "^19.7.0",
     "jquery": "^3.5.1",
     "lodash": "^4.17.20",
     "on-change": "^2.1.2",
     "popper.js": "^1.16.1",
+    "rss-parser": "^3.9.0",
     "yup": "^0.29.3"
   }
 }
