@@ -3,6 +3,7 @@ import _ from 'lodash';
 import i18next from 'i18next';
 import * as y from 'yup';
 import onChange from 'on-change';
+import axios from 'axios';
 import parseLink from './rss.parser.js';
 
 export default () => {
@@ -89,7 +90,7 @@ export default () => {
 
   const watchedState = onChange(state, (path, channels, previousValue) => {
     const newChannel = channels[channels.length - 1];
-    fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(newChannel)}`)
+    axios.get(`https://api.allorigins.win/get?url=${encodeURIComponent(newChannel)}`)
       .then((response) => {
         if (response.ok) return response.json();
         throw new Error('Network response was not ok.');
