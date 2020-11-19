@@ -6,9 +6,10 @@
   "name": "frontend-project-lvl3",
   "version": "1.0.0",
   "description": "rss watcher",
-  "main": "index.js",
+  "main": "./webpack.config.cjs",
   "scripts": {
-    "build": "webpack"
+    "start": "webpack-dev-server -d --hot --config webpack.config.cjs --watch",
+    "build": "nuxt generate"
   },
   "type": "module",
   "keywords": [
@@ -26,6 +27,7 @@
     "eslint": "^7.12.1",
     "eslint-config-airbnb-base": "^14.2.0",
     "eslint-plugin-import": "^2.22.1",
+    "nodemon": "^2.0.6",
     "style-loader": "^1.2.1",
     "webpack": "^4.44.1",
     "webpack-cli": "^3.3.12",
@@ -33,10 +35,12 @@
   },
   "dependencies": {
     "bootstrap": "^4.5.2",
+    "express": "^4.17.1",
     "html-webpack-plugin": "^4.4.1",
     "i18next": "^19.7.0",
     "jquery": "^3.5.1",
     "lodash": "^4.17.20",
+    "node-fetch": "^2.6.1",
     "on-change": "^2.1.2",
     "popper.js": "^1.16.1",
     "yup": "^0.29.3"

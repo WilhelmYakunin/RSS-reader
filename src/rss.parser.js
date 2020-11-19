@@ -2,6 +2,12 @@ export default (xml) => {
   const domParser = new DOMParser();
   const doc = domParser.parseFromString(`${xml.contents}`, 'application/xml');
   const channel = doc.querySelector('channel');
+
+  const channelMapping = ['title', 'description', 'item'];
+
+  const parsedChannel = channelMapping.map((tag) => channel.querySelectorAll(tag));
+  console.log(parsedChannel);
+
   const title = channel.querySelector('title').textContent;
   const description = channel.querySelector('description').textContent;
   const items = channel.querySelectorAll('item');
