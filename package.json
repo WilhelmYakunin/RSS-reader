@@ -6,11 +6,7 @@
   "name": "frontend-project-lvl3",
   "version": "1.0.0",
   "description": "rss watcher",
-  "main": "./webpack.config.cjs",
-  "scripts": {
-    "start": "webpack-dev-server -d --hot --config webpack.config.cjs --watch",
-    "build": "nuxt generate"
-  },
+  "main": "src/index.js",
   "type": "module",
   "keywords": [
     "rss",
