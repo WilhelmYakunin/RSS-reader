@@ -10,15 +10,15 @@ export default (xml) => {
 
   const title = channel.querySelector('title').textContent;
   const description = channel.querySelector('description').textContent;
-  const items = channel.querySelectorAll('item');
-  const itemsList = [...items].map((item) => {
-    const pubDate = new Date(item.querySelector('pubDate').textContent);
-    const itemTitle = item.querySelector('title').textContent;
-    const itemDescription = item.querySelector('description').textContent;
-    const itemLink = item.querySelector('link').textContent;
+  const posts = channel.querySelectorAll('item');
+  const postsList = [...posts].map((post) => {
+    const pubDate = new Date(post.querySelector('pubDate').textContent);
+    const postTitle = post.querySelector('title').textContent;
+    const postDescription = post.querySelector('description').textContent;
+    const postLink = post.querySelector('link').textContent;
     return {
-      pubDate, itemTitle, itemDescription, itemLink,
+      pubDate, postTitle, postDescription, postLink,
     };
   });
-  return { title, description, itemsList };
+  return { title, description, postsList };
 };

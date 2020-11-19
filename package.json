@@ -6,10 +6,10 @@
   "name": "frontend-project-lvl3",
   "version": "1.0.0",
   "description": "rss watcher",
-  "main": "src/index.js",
+  "main": "./webpack.config.cjs",
   "scripts": {
-    "start": "npx webpack --config webpack.config.cjs --env NODE_ENV=local --env production --progress",
-    "build": "nuxt generate"
+    "development": "webpack-dev-server -d --hot --config webpack.config.cjs --watch",
+    "start": "npx webpack --config webpack.config.cjs --env NODE_ENV=local --env production --progress"
   },
   "type": "module",
   "keywords": [
@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/WilhelmYakunin/frontend-project-lvl3#readme",
   "devDependencies": {
+    "html-webpack-plugin": "^4.4.1",
     "css-loader": "^4.3.0",
     "eslint": "^7.12.1",
     "eslint-config-airbnb-base": "^14.2.0",
@@ -36,7 +37,6 @@
   "dependencies": {
     "bootstrap": "^4.5.2",
     "express": "^4.17.1",
-    "html-webpack-plugin": "^4.4.1",
     "i18next": "^19.7.0",
     "jquery": "^3.5.1",
     "lodash": "^4.17.20",

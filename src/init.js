@@ -5,7 +5,7 @@ import * as y from 'yup';
 import onChange from 'on-change';
 import parseLink from './rss.parser.js';
 
-export default async () => {
+export default () => {
   i18next.init({
     lng: 'ru',
     debug: true,
@@ -20,11 +20,6 @@ export default async () => {
   });
 
   const state = {
-    form: {
-      fields: {
-        url: '',
-      },
-    },
     listedChannels: [],
     posts: [],
     errors: null,
@@ -148,7 +143,7 @@ export default async () => {
     feedbackElement.textContent = '';
   });
 
-  form.addEventListener('submit', async (e) => {
+  form.addEventListener('submit', (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     formData.get('url');
