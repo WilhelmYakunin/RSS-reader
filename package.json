@@ -8,7 +8,6 @@
   "description": "rss watcher",
   "main": "./webpack.config.cjs",
   "scripts": {
-    "development": "webpack-dev-server -d --hot --config webpack.config.cjs --watch",
     "start": "npx webpack --config webpack.config.cjs --env NODE_ENV=local --env production --progress"
   },
   "type": "module",

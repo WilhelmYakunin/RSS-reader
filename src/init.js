@@ -90,11 +90,9 @@ export default () => {
 
   const watchedState = onChange(state, (path, channels, previousValue) => {
     const newChannel = channels[channels.length - 1];
-    axios.get(`https://api.allorigins.win/get?url=${encodeURIComponent(newChannel)}`)
-      .then((response) => {
-        if (response.ok) return response.json();
-        throw new Error('Network response was not ok.');
-      })
+    const allorigins = 'https://api.allorigins.win/get?url=';
+    axios.get(`${allorigins}${encodeURIComponent(newChannel)}`)
+      .then((response) => response.json())
       .then((data) => parseLink(data))
       .then((parsedUrl) => render(newChannel, parsedUrl, previousValue))
       .catch(() => {
@@ -104,11 +102,9 @@ export default () => {
   });
 
   const watchChannelChanges = () => {
-    const hasNewPosts = () => state.posts.map((feed) => fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(feed.link)}`)
-      .then((response) => {
-        if (response.ok) return response.json();
-        throw new Error('Network response was not ok.');
-      })
+    const allorigins = 'https://api.allorigins.win/get?url=';
+    const hasNewPosts = () => state.posts.map((feed) => axios.get(`${allorigins}${encodeURIComponent(feed.link)}`)
+      .then((response) => response.json())
       .then((data) => parseLink(data))
       .then((parsedURL) => parsedURL.itemsList.filter((post) => post.pubDate > feed.lastUpdate))
       .then((newPosts) => {
