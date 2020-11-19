@@ -21,7 +21,7 @@ module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
       title: 'RSS Generator',
-      template: 'template.html',
+      template: 'index.html',
     }),
   ],
 };

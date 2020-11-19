@@ -7,6 +7,10 @@
   "version": "1.0.0",
   "description": "rss watcher",
   "main": "src/index.js",
+  "scripts": {
+    "start": "npx webpack --env NODE_ENV=local --env production --progress",
+    "build": "nuxt generate"
+  },
   "type": "module",
   "keywords": [
     "rss",
