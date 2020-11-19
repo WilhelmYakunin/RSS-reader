@@ -8,7 +8,7 @@
   "description": "rss watcher",
   "main": "index.js",
   "scripts": {
-    "build": "webpack"
+    "build": "nuxt generate",
   },
   "type": "module",
   "keywords": [
