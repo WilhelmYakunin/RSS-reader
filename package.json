@@ -6,7 +6,6 @@
   "name": "frontend-project-lvl3",
   "version": "1.0.0",
   "description": "rss watcher",
-  "main": "./webpack.config.cjs",
   "scripts": {
     "start": "npx webpack --config webpack.config.cjs --env NODE_ENV=local --env production --progress"
   },
@@ -36,12 +35,11 @@
   "dependencies": {
     "axios": "^0.21.0",
     "bootstrap": "^4.5.2",
-    "express": "^4.17.1",
+    "i18n": "^0.13.2",
     "i18next": "^19.7.0",
+    "i18next-browser-languagedetector": "^6.0.1",
     "jquery": "^3.5.1",
     "lodash": "^4.17.20",
-    "node-fetch": "^2.6.1",
-    "nuxt": "^2.14.7",
     "on-change": "^2.1.2",
     "popper.js": "^1.16.1",
     "yup": "^0.29.3"
