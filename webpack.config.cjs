@@ -1,10 +1,8 @@
-const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   output: {
     filename: 'index.js',
-    path: path.resolve('./'),
   },
   module: {
     rules: [
