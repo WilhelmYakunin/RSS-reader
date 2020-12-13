@@ -7,7 +7,7 @@
   "version": "1.0.0",
   "description": "rss watcher",
   "scripts": {
-    "start": "npx webpack --config webpack.config.cjs --env NODE_ENV=local --env production --progress"
+    "start": "webpack-dev-server -d --hot --config webpack.config.cjs --env NODE_ENV=local --env production --progress"
   },
   "type": "module",
   "keywords": [
