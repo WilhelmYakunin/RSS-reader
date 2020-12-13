@@ -6,9 +6,9 @@
   "name": "frontend-project-lvl3",
   "version": "1.0.0",
   "description": "rss watcher",
-  "main": "./public/index.html",
+  "main": "index.html",
   "scripts": {
-    "start": "npx webpack --config webpack.config.cjs --env NODE_ENV=local --env production --progress"
+    "start": "npx webpack --config webpack.config.cjs --env NODE_ENV=local --env production --progress --output public.js"
   },
   "type": "module",
   "keywords": [
