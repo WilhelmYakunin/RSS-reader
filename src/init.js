@@ -2,8 +2,8 @@ import i18next from 'i18next';
 import * as y from 'yup';
 import onChange from 'on-change';
 import i18n from './locales/i18nEngine';
-import parseLink from './rss.parser.js';
-import parseSiteLink from './link.parser.js';
+import { parseLink, getImg } from './parse.js';
+import { renderNewChannel, renderPost, renderErrors } from './render.js';
 
 export default () => i18n().then(() => {
   const siteHeader = document.querySelector('[role="head-header"]');
@@ -20,6 +20,7 @@ export default () => i18n().then(() => {
   const form = document.querySelector('[role="rss-form"]');
   const feedbackDiv = document.querySelector('[role="feedback"]');
   const feedButtons = posts.getElementsByTagName('button');
+  const { body } = document;
 
   const state = {
     channels: [],
@@ -55,10 +56,10 @@ export default () => i18n().then(() => {
     if (feeds.children.length === 0) {
       feeds.textContent = `${i18next.t('feeds')}`;
     }
-    const linkButtons = document.querySelectorAll('[role="post-link"]');
-    const footerCloseButtons = document.querySelectorAll('[role="close-modal"]');
-    Array.from(linkButtons).map((linkButton) => updateElem('postLink', linkButton));
-    Array.from(footerCloseButtons).map((footerCloseButton) => updateElem('close', footerCloseButton));
+    const modalLinkButton = document.querySelectorAll('[role="post-link"]');
+    const modalCloseButton = document.querySelectorAll('[role="close-modal"]');
+    updateElem('postLink', modalLinkButton);
+    updateElem('close', modalCloseButton);
   }
 
   updatePageContent();
@@ -93,147 +94,69 @@ export default () => i18n().then(() => {
     updatePageContent();
   });
 
-  function renderNewChannel(title, description) {
-    if (feeds.children.length === 0) {
-      feeds.textContent = '';
-    }
-    const newChannelHeader = document.createElement('h3');
-    newChannelHeader.textContent = title;
-    newChannelHeader.classList.add('display-6');
+  const createDiv = () => document.createElement('div');
 
-    const channelDescription = document.createElement('small');
-    channelDescription.textContent = description;
-    channelDescription.classList.add('text-muted');
+  const modalDiv = createDiv();
+  modalDiv.classList.add('modal', 'fade', 'bg-transparent');
+  modalDiv.setAttribute('id', 'modal');
+  modalDiv.setAttribute('tabindex', '-1');
+  modalDiv.setAttribute('role', 'dialog');
+  modalDiv.setAttribute('aria-labelledby', 'modal');
+  modalDiv.setAttribute('style', 'display: none');
+  modalDiv.setAttribute('aria-hidden', 'true');
+  body.appendChild(modalDiv);
 
-    const newChannel = document.createElement('li');
-    newChannel.classList.add('list-group-item');
-    newChannel.appendChild(newChannelHeader);
-    newChannel.appendChild(channelDescription);
-    return feeds.appendChild(newChannel);
-  }
+  const dialogDiv = createDiv();
+  dialogDiv.classList.add('modal-dialog');
+  dialogDiv.setAttribute('role', 'document');
+  modalDiv.appendChild(dialogDiv);
 
-  function createModal(modalTitle, id, postDescription, postLink) {
-    const createDiv = () => document.createElement('div');
+  const modalContentDiv = createDiv();
+  modalContentDiv.classList.add('modal-content');
+  dialogDiv.appendChild(modalContentDiv);
 
-    const parentDiv = createDiv();
-    parentDiv.classList.add('modal', 'fade', 'bg-transparent');
-    parentDiv.setAttribute('id', id);
-    parentDiv.setAttribute('tabindex', '-1');
-    parentDiv.setAttribute('role', 'dialog');
-    parentDiv.setAttribute('aria-labelledby', `${id}Label`);
-    parentDiv.setAttribute('aria-hidden', 'true');
+  const modalHeader = createDiv();
+  modalHeader.classList.add('modal-header');
+  modalContentDiv.appendChild(modalHeader);
 
-    const contentDiv = createDiv();
-    contentDiv.classList.add('modal-dialog', 'bg-white');
-    contentDiv.setAttribute('role', 'document');
-    parentDiv.appendChild(contentDiv);
+  const modalTitle = document.createElement('h5');
+  modalTitle.classList.add('modal-title');
+  modalHeader.appendChild(modalTitle);
 
-    const modalHeader = createDiv();
-    modalHeader.classList.add('modal-header');
-    contentDiv.appendChild(modalHeader);
+  const cross = createDiv();
+  cross.classList.add('close');
+  cross.setAttribute('type', 'button');
+  cross.setAttribute('data-dismiss', 'modal');
+  cross.setAttribute('aria-label', 'close');
+  const crossSpan = document.createElement('span');
+  crossSpan.setAttribute('aria-hidden', 'true');
+  crossSpan.textContent = 'x';
+  cross.appendChild(crossSpan);
+  modalHeader.appendChild(cross);
 
-    const title = document.createElement('h3');
-    title.classList.add('modal-title');
-    title.setAttribute('id', `${id}Label`);
-    title.textContent = modalTitle;
-    modalHeader.appendChild(title);
+  const modalBody = createDiv();
+  modalBody.classList.add('modal-body');
+  modalContentDiv.appendChild(modalBody);
 
-    const closeButton = document.createElement('button');
-    closeButton.setAttribute('type', 'button');
-    closeButton.classList.add('close');
-    closeButton.setAttribute('data-dismiss', 'modal');
-    closeButton.setAttribute('aria-label', 'Close');
-    const headerSpan = document.createElement('span');
-    headerSpan.setAttribute('aria-hidden', 'true');
-    closeButton.appendChild(headerSpan);
-    modalHeader.appendChild(closeButton);
+  const modalFooter = createDiv();
+  modalFooter.classList.add('modal-footer');
+  modalContentDiv.appendChild(modalFooter);
 
-    const modalBody = createDiv();
-    modalBody.classList.add('modal-body');
-    modalBody.textContent = postDescription;
-    contentDiv.appendChild(modalBody);
+  const linkButton = document.createElement('a');
+  linkButton.classList.add('btn', 'btn-primary');
+  linkButton.setAttribute('target', '_blank');
+  linkButton.textContent = `${i18next.t('postLink')}`;
+  linkButton.setAttribute('role', 'post-link');
+  linkButton.setAttribute('rel', 'noopener noreferrer');
+  modalFooter.appendChild(linkButton);
 
-    const modalFooter = createDiv();
-    modalFooter.classList.add('modal-footer');
-    contentDiv.appendChild(modalFooter);
-
-    const linkButton = document.createElement('a');
-    linkButton.classList.add('btn', 'btn-primary');
-    linkButton.href = postLink;
-    linkButton.textContent = `${i18next.t('postLink')}`;
-    linkButton.setAttribute('role', 'post-link');
-    linkButton.addEventListener('click', (e) => {
-      e.preventDefault();
-      window.open(postLink);
-    });
-    modalFooter.appendChild(linkButton);
-
-    const footerCloseButton = document.createElement('button');
-    footerCloseButton.setAttribute('type', 'button');
-    footerCloseButton.classList.add('btn', 'btn-secondary');
-    footerCloseButton.textContent = `${i18next.t('close')}`;
-    footerCloseButton.setAttribute('role', 'close-modal');
-    modalFooter.appendChild(footerCloseButton);
-
-    return parentDiv;
-  }
-
-  function renderPost(post) {
-    const {
-      pubDate, postTitle, postDescription, postLink, imgLink,
-    } = post;
-    const feedLi = document.createElement('li');
-    feedLi.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'm-2');
-
-    const postCard = document.createElement('div');
-    const feedPicture = document.createElement('img');
-    feedPicture.setAttribute('height', '120');
-    feedPicture.src = imgLink;
-    postCard.appendChild(feedPicture);
-    postCard.classList.add('p-1');
-    feedLi.appendChild(postCard);
-
-    const postBody = document.createElement('div');
-    postBody.classList.add('d-flex', 'flex-column', 'ml-5');
-    const postHeader = document.createElement('h5');
-    postHeader.classList.add('card-title');
-    postBody.appendChild(postHeader);
-    const feedLink = document.createElement('a');
-    feedLink.href = postLink;
-    feedLink.textContent = postTitle;
-    postHeader.appendChild(feedLink);
-    const feedDescription = document.createElement('p');
-    const publicationInfo = pubDate.toString().split(' ').slice(1, 5).join(' ');
-    feedDescription.textContent = `${postDescription} / ${publicationInfo}`;
-    feedDescription.classList.add('text-muted');
-    postBody.appendChild(feedDescription);
-    const feedButton = document.createElement('button');
-    feedButton.classList.add('btn', 'btn-primary', 'btn-small');
-    feedButton.textContent = `${i18next.t('preview')}`;
-    feedButton.setAttribute('type', 'button');
-    feedButton.setAttribute('data-toggle', 'modal');
-    const modalId = postLink.replace(/\W/g, '');
-    const buttonId = `#${modalId}`;
-    feedButton.setAttribute('data-target', buttonId);
-    postBody.appendChild(feedButton);
-    const modal = createModal(postTitle, modalId, postDescription, postLink);
-    feedLi.appendChild(modal);
-    feedLink.classList.add('font-weight-bold');
-    feedLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      window.open(postLink);
-      feedLink.classList.remove('font-weight-bold');
-    });
-    feedLi.appendChild(postBody);
-
-    return feedLi;
-  }
-
-  function renderErrors(err) {
-    feedbackDiv.classList.remove('text-success');
-    feedbackDiv.classList.add('text-danger');
-    feedbackDiv.textContent = `${i18next.t(err)}`;
-  }
+  const footerCloseButton = document.createElement('button');
+  footerCloseButton.setAttribute('type', 'button');
+  footerCloseButton.classList.add('btn', 'btn-secondary');
+  footerCloseButton.textContent = `${i18next.t('close')}`;
+  footerCloseButton.setAttribute('role', 'close-modal');
+  footerCloseButton.setAttribute('data-dismiss', 'modal');
+  modalFooter.appendChild(footerCloseButton);
 
   function watchChannel(feedsList, ulId) {
     setTimeout(watchChannel, 5000, feedsList, ulId);
@@ -246,7 +169,7 @@ export default () => i18n().then(() => {
       if (newPosts.length !== 0) {
         const parentUl = document.getElementById(ulId);
         newPosts.map((post) => {
-          const newPostLi = renderPost(post);
+          const newPostLi = renderPost(post, { modalTitle, modalBody, linkButton });
           return parentUl.appendChild(newPostLi);
         });
       }
@@ -262,12 +185,12 @@ export default () => i18n().then(() => {
     const newChannel = channels[channels.length - 1];
     parseLink(newChannel).then((rssData) => {
       const { title, description, postsList } = rssData;
-      renderNewChannel(title, description);
+      renderNewChannel(feeds, title, description);
       const promises = Array.from(postsList).map((post) => {
         const {
           pubDate, postTitle, postDescription, postLink,
         } = post;
-        return parseSiteLink(postLink).then((imgLink) => ({
+        return getImg(postLink).then((imgLink) => ({
           pubDate, postTitle, postDescription, postLink, imgLink,
         }));
       });
@@ -286,7 +209,7 @@ export default () => i18n().then(() => {
       Promise.allSettled(promises).then((results) => {
         results.map((post) => {
           const postInfo = post.value;
-          const postLi = renderPost(postInfo);
+          const postLi = renderPost(postInfo, { modalTitle, modalBody, linkButton });
           return newPostst.appendChild(postLi);
         });
         state.process = 'loaded';
@@ -301,13 +224,13 @@ export default () => i18n().then(() => {
         if (err.name === 'TypeError') {
           const urlErr = 'notRss';
           state.process = urlErr;
-          renderErrors(urlErr);
+          renderErrors(feedbackDiv, urlErr);
           state.channels.splice(-1, 1);
         }
         if (err.name === 'Error') {
           const urlErr = 'network';
           state.process = urlErr;
-          renderErrors(urlErr);
+          renderErrors(feedbackDiv, urlErr);
         }
       });
   });
@@ -329,7 +252,7 @@ export default () => i18n().then(() => {
       .catch((err) => {
         inputButton.disabled = false;
         state.process = err.message;
-        renderErrors(err.message);
+        renderErrors(feedbackDiv, err.message);
       });
   });
 });
