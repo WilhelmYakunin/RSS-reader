@@ -8,7 +8,7 @@
   "description": "rss watcher",
   "main": "index.html",
   "scripts": {
-    "start": "npx webpack --config webpack.config.cjs --env NODE_ENV=local --env production --progress"
+    "start": "npx webpack --config webpack.config.cjs --env NODE_ENV=local --env production --progress --output main.js"
   },
   "type": "module",
   "keywords": [
