@@ -22,7 +22,7 @@ export default () => i18n().then(() => {
   const feedButtons = posts.getElementsByTagName('button');
   const modalLinkButton = document.querySelector('[role="post-link"]');
   const modalCloseButton = document.querySelector('[role="close-modal"]');
- 
+
   const state = {
     channels: {
       links: [],
@@ -44,12 +44,12 @@ export default () => i18n().then(() => {
     modalLinkButton,
     modalCloseButton,
   };
-  
+
   function updateElem(elemName, elem) {
     const transletEleme = elem;
     transletEleme.textContent = i18next.t(elemName);
   }
-  
+
   function updatePageContent() {
     Object.entries(elemArr).map(([propertyName, elem]) => updateElem(propertyName, elem));
     feedbackDiv.textContent = i18next.t(state.process);
@@ -59,92 +59,18 @@ export default () => i18n().then(() => {
     }
   }
 
-  const languages = ['en', 'de', 'ru'];
+  const languagesMap = ['en', 'de', 'ru'];
 
-  languages.map((lang) => {
+  languagesMap.map((lang) => {
     const langButton = document.querySelector(`[role="${lang}"]`);
-    langButton.addEventListener('click', function changeLan(){
+    langButton.addEventListener('click', () => {
       i18next.changeLanguage(lang);
       updatePageContent();
     });
-  })
-
-  updatePageContent();
-
-  const watchedState = onChange(state, (path, value) => {
-    console.log(path)
-    switch (path) {
-      case 'panel':
-        const panel = value;
-        feedsContainer.classList.toggle('invisible');
-        panel === 'open' ? panelClose.textContent = i18next.t('panelClose') : panelClose.textContent = i18next.t('panelOpen');
-        break;
-      default:
-        const channels = value;
-    inputButton.disabled = true;
-    state.process = 'loading';
-    feedbackDiv.textContent = i18next.t(state.process);
-    feedbackDiv.classList.remove('text-danger');
-    feedbackDiv.classList.add('text-success');
-    const newChannel = channels[channels.length - 1];
-    parseLink(newChannel).then((rssData) => {
-      const { title, description, postsList } = rssData;
-      const promises = Array.from(postsList).map((post) => {
-        const {
-          pubDate, postTitle, postDescription, postLink,
-        } = post;
-        return getImg(postLink).then((imgLink) => ({
-          pubDate, postTitle, postDescription, postLink, imgLink,
-        }));
-      });
-      const newPostst = document.createElement('ul');
-      const postsListTitle = document.createElement('h3');
-      newPostst.appendChild(postsListTitle);
-      postsListTitle.classList.add('text-secondary', 'p-1');
-      const poststDescription = document.createElement('p');
-      poststDescription.classList.add('text-muted', 'p-1');
-      newPostst.appendChild(poststDescription);
-      newPostst.setAttribute('id', `${newChannel}`);
-      const ulId = newPostst.id;
-      posts.appendChild(newPostst);
-      Promise.allSettled(promises).then((results) => {
-        results.map((post) => {
-          const postInfo = post.value;
-          const postLi = renderPost(postInfo);
-          return newPostst.appendChild(postLi);
-        });
-        postsListTitle.textContent = title;
-        poststDescription.textContent = description;
-        renderNewChannel(feedsContainer, title, description);
-        state.process = 'loaded';
-        feedbackDiv.textContent = i18next.t(state.process);
-        feedbackDiv.classList.add('text-success');
-        input.value = null;
-        inputButton.disabled = false;
-        watchChannel(postsList, ulId); 
-      }) 
-      .catch((err) => {
-        inputButton.disabled = false;
-        if (err.name === 'TypeError') {
-          const urlErr = 'notRss';
-          state.process = urlErr;
-          renderErrors(feedbackDiv, urlErr);
-          state.channels.links.splice(-1, 1);
-        }
-        if (err.name === 'Error') {
-          const urlErr = 'network';
-          state.process = urlErr;
-          renderErrors(feedbackDiv, urlErr);
-          state.channels.links.splice(-1, 1);
-        }
-      });
-    })
-  }})
-
-  panelClose.addEventListener('click', () => {
-    state.panel === 'open' ? watchedState.panel = 'close' : watchedState.panel = 'open';
+    return langButton;
   });
 
+  updatePageContent();
 
   function watchChannel(feedsList, ulId) {
     setTimeout(watchChannel, 5000, feedsList, ulId);
@@ -163,11 +89,91 @@ export default () => i18n().then(() => {
       }
     });
   }
+  const changeFeedsVisability = (indicator) => {
+    const tranlete = i18next.t(indicator);
+    panelClose.textContent = tranlete;
+  };
+
+  const watchedState = onChange(state, (path, value) => {
+    switch (path) {
+      case 'panel':
+        feedsContainer.classList.toggle('invisible');
+        if (value === 'open') {
+          return changeFeedsVisability('panelClose');
+        } return changeFeedsVisability('panelOpen');
+      default:
+        inputButton.disabled = true;
+        state.process = 'loading';
+        feedbackDiv.textContent = i18next.t(state.process);
+        feedbackDiv.classList.remove('text-danger');
+        feedbackDiv.classList.add('text-success');
+        parseLink(value[value.length - 1]).then((rssData) => {
+          const { title, description, postsList } = rssData;
+          const promises = Array.from(postsList).map((post) => {
+            const {
+              pubDate, postTitle, postDescription, postLink,
+            } = post;
+            return getImg(postLink).then((imgLink) => ({
+              pubDate, postTitle, postDescription, postLink, imgLink,
+            }));
+          });
+          const newPostst = document.createElement('ul');
+          const postsListTitle = document.createElement('h3');
+          newPostst.appendChild(postsListTitle);
+          postsListTitle.classList.add('text-secondary', 'p-1');
+          const poststDescription = document.createElement('p');
+          poststDescription.classList.add('text-muted', 'p-1');
+          newPostst.appendChild(poststDescription);
+          newPostst.setAttribute('id', `${value[value.length - 1]}`);
+          const ulId = newPostst.id;
+          posts.appendChild(newPostst);
+          Promise.allSettled(promises).then((results) => {
+            results.map((post) => {
+              const postInfo = post.value;
+              const postLi = renderPost(postInfo);
+              return newPostst.appendChild(postLi);
+            });
+            postsListTitle.textContent = title;
+            poststDescription.textContent = description;
+            renderNewChannel(feedsContainer, title, description);
+            state.process = 'loaded';
+            feedbackDiv.textContent = i18next.t(state.process);
+            feedbackDiv.classList.add('text-success');
+            input.value = null;
+            inputButton.disabled = false;
+            watchChannel(postsList, ulId);
+          })
+            .catch((err) => {
+              inputButton.disabled = false;
+              if (err.name === 'TypeError') {
+                const urlErr = 'notRss';
+                state.process = urlErr;
+                renderErrors(feedbackDiv, urlErr);
+                state.channels.links.splice(-1, 1);
+              }
+              if (err.name === 'Error') {
+                const urlErr = 'network';
+                state.process = urlErr;
+                renderErrors(feedbackDiv, urlErr);
+                state.channels.links.splice(-1, 1);
+              }
+            });
+        });
+    }
+    return state;
+  });
+
+  panelClose.addEventListener('click', () => {
+    if (state.panel === 'open') {
+      watchedState.panel = 'close';
+      return;
+    } watchedState.panel = 'open';
+  });
 
   input.addEventListener('input', () => {
     state.process = null;
     feedbackDiv.textContent = null;
-  })
+  });
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();

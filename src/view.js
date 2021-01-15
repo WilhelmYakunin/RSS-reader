@@ -46,7 +46,7 @@ function renderPost(post) {
   postBody.appendChild(postHeader);
   const feedLink = document.createElement('a');
   feedLink.setAttribute('target', '_blank');
-  feedLink.href = postLink;  
+  feedLink.href = postLink;
   feedLink.textContent = postTitle;
   feedLink.classList.add('font-weight-bold');
   feedLink.addEventListener('click', (e) => {
@@ -59,7 +59,7 @@ function renderPost(post) {
   const pubDateSlioceToElements = 5;
   const publicationInfo = pubDate.toString().split(' ').slice(0, pubDateSlioceToElements).join(' ');
   const previewMaxLenght = 200;
-  const previewInfo = `${postDescription.slice(0, previewMaxLenght)}...`;
+  const previewInfo = `${postDescription.slice(0, previewMaxLenght).trim()}...`;
   feedDescription.innerHTML = `${previewInfo} / ${publicationInfo}`;
   feedDescription.classList.add('text-muted');
   postBody.appendChild(feedDescription);

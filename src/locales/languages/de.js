@@ -15,7 +15,7 @@ export default {
     panelOpen: 'öffnen',
     panelClose: 'ausblenden',
     posts: 'Deine beiträge',
-    preview: 'Vorschau',    
+    preview: 'Vorschau',
     modalLinkButton: 'Ganzseitigen',
     modalCloseButton: 'Schließen',
     network: 'Netzwerkprobleme. Versuchen Sie es erneut',
