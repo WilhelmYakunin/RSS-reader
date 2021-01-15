@@ -5,11 +5,11 @@ function genLink(url) {
   return `${proxi}${encodeURIComponent(url)}`;
 }
 
-function parseLink(newChannel) {
-  return axios.get(genLink(newChannel))
-    .then((response) => {
+function parseLink(str) {
+  return axios.get(genLink(str))
+    .then((document) => {
       const domParser = new DOMParser();
-      const doc = domParser.parseFromString(`${response.data.contents}`, 'application/xml');
+      const doc = domParser.parseFromString(`${document.data.contents}`, 'application/xml');
       const channel = doc.querySelector('channel');
 
       const title = channel.querySelector('title').textContent;
@@ -28,11 +28,11 @@ function parseLink(newChannel) {
     });
 }
 
-function getImg(postLink) {
-  return axios.get(genLink(postLink))
-    .then((response) => {
+function getImg(str) {
+  return axios.get(genLink(str))
+    .then((document) => {
       const domParser = new DOMParser();
-      const doc = domParser.parseFromString(`${response.data.contents}`, 'text/html');
+      const doc = domParser.parseFromString(`${document.data.contents}`, 'text/html');
       const head = doc.querySelector('head');
       const og = head.querySelectorAll('[property="og:image"]');
       const postImg = og[0].content;

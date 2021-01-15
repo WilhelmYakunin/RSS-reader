@@ -1,5 +1,9 @@
 import i18next from 'i18next';
 
+const modalTitle = document.querySelector('[class="modal-title"]');
+const modalBody = document.querySelector('[class="modal-body"]');
+const linkButton = document.querySelector('[role="post-link"]');
+
 function renderNewChannel(feeds, title, description) {
   if (feeds.children.length === 0) {
     const tatrgetDiv = feeds;
@@ -20,7 +24,7 @@ function renderNewChannel(feeds, title, description) {
   return feeds.appendChild(newChannel);
 }
 
-function renderPost(post, modal) {
+function renderPost(post) {
   const {
     pubDate, postTitle, postDescription, postLink, imgLink,
   } = post;
@@ -41,35 +45,37 @@ function renderPost(post, modal) {
   postHeader.classList.add('card-title');
   postBody.appendChild(postHeader);
   const feedLink = document.createElement('a');
-  feedLink.href = postLink;
+  feedLink.setAttribute('target', '_blank');
+  feedLink.href = postLink;  
   feedLink.textContent = postTitle;
+  feedLink.classList.add('font-weight-bold');
+  feedLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.open(postLink);
+    feedLink.classList.remove('font-weight-bold');
+  });
   postHeader.appendChild(feedLink);
   const feedDescription = document.createElement('p');
-  const publicationInfo = pubDate.toString().split(' ').slice(1, 5).join(' ');
-  const previewInfo = `${postDescription.split('').slice(0, 300).join('')}...`;
+  const pubDateSlioceToElements = 5;
+  const publicationInfo = pubDate.toString().split(' ').slice(0, pubDateSlioceToElements).join(' ');
+  const previewMaxLenght = 200;
+  const previewInfo = `${postDescription.slice(0, previewMaxLenght)}...`;
   feedDescription.innerHTML = `${previewInfo} / ${publicationInfo}`;
   feedDescription.classList.add('text-muted');
   postBody.appendChild(feedDescription);
   const feedButton = document.createElement('button');
   feedButton.classList.add('btn', 'btn-primary', 'btn-small');
-  feedButton.textContent = `${i18next.t('preview')}`;
+  feedButton.textContent = i18next.t('preview');
   feedButton.setAttribute('type', 'button');
   feedButton.setAttribute('data-toggle', 'modal');
   const buttonId = '#modal';
   feedButton.setAttribute('data-target', buttonId);
   feedButton.addEventListener('click', () => {
-    const { modalTitle, modalBody, linkButton } = modal;
     modalTitle.textContent = postTitle;
     modalBody.innerHTML = postDescription;
     linkButton.href = postLink;
   });
   postBody.appendChild(feedButton);
-  feedLink.classList.add('font-weight-bold');
-  feedLink.setAttribute('target', '_blank');
-  feedLink.addEventListener('click', (e) => {
-    e.preventDefault();
-    feedLink.classList.remove('font-weight-bold');
-  });
   feedLi.appendChild(postBody);
 
   return feedLi;
@@ -79,7 +85,7 @@ function renderErrors(feedbackDiv, err) {
   const targetDiv = feedbackDiv;
   feedbackDiv.classList.remove('text-success');
   feedbackDiv.classList.add('text-danger');
-  targetDiv.textContent = `${i18next.t(err)}`;
+  targetDiv.textContent = i18next.t(err);
 }
 
 export { renderNewChannel, renderPost, renderErrors };
