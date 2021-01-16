@@ -59,15 +59,14 @@ export default () => i18n().then(() => {
     }
   }
 
-  const languagesMap = ['en', 'de', 'ru'];
+  const languages = ['en', 'de', 'ru'];
 
-  languagesMap.map((lang) => {
+  languages.map((lang) => {
     const langButton = document.querySelector(`[role="${lang}"]`);
-    langButton.addEventListener('click', () => {
+    return langButton.addEventListener('click', () => {
       i18next.changeLanguage(lang);
       updatePageContent();
     });
-    return langButton;
   });
 
   updatePageContent();
@@ -142,23 +141,23 @@ export default () => i18n().then(() => {
             input.value = null;
             inputButton.disabled = false;
             watchChannel(postsList, ulId);
-          })
-            .catch((err) => {
-              inputButton.disabled = false;
-              if (err.name === 'TypeError') {
-                const urlErr = 'notRss';
-                state.process = urlErr;
-                renderErrors(feedbackDiv, urlErr);
-                state.channels.links.splice(-1, 1);
-              }
-              if (err.name === 'Error') {
-                const urlErr = 'network';
-                state.process = urlErr;
-                renderErrors(feedbackDiv, urlErr);
-                state.channels.links.splice(-1, 1);
-              }
-            });
-        });
+          });
+        })
+          .catch((err) => {
+            inputButton.disabled = false;
+            if (err.name === 'TypeError') {
+              const urlErr = 'notRss';
+              state.process = urlErr;
+              renderErrors(feedbackDiv, urlErr);
+              state.channels.links.splice(-1, 1);
+            }
+            if (err.name === 'Error') {
+              const urlErr = 'network';
+              state.process = urlErr;
+              renderErrors(feedbackDiv, urlErr);
+              state.channels.links.splice(-1, 1);
+            }
+          });
     }
     return state;
   });
