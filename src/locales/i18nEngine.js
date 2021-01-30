@@ -4,7 +4,9 @@ import ru from './languages/ru';
 import en from './languages/en';
 import de from './languages/de';
 
-export default () => i18next
+const languages = ['en', 'de', 'ru'];
+
+const i18n = () => i18next
   .use(LanguageDetector)
   .init({
     detection: {
@@ -18,7 +20,7 @@ export default () => i18next
       caches: ['localStorage', 'cookie'],
       excludeCacheFor: ['cimode'],
     },
-    fallbackLng: ['en', 'de', 'ru'],
+    fallbackLng: languages,
     debug: true,
     resources: {
       ru,
@@ -29,3 +31,5 @@ export default () => i18next
     if (err) console.log('something went wrong loading language settings', err);
     t('languageError');
   });
+
+export { i18n, languages };
