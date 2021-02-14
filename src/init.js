@@ -2,6 +2,7 @@ import i18next from 'i18next';
 import * as yup from 'yup';
 import onChange from 'on-change';
 import axios from 'axios';
+import _ from 'lodash';
 import { i18n, languages } from './locales/i18nEngine';
 import parseLink from './parse.js';
 
@@ -36,14 +37,13 @@ export default () => i18n().then(() => {
     form: {
       processState: 'init: ready for processing',
       processError: 'init',
-      fields: {
-        url: 'init: no url',
-      },
     },
-    urls: [],
-    channels: {},
+    channels: {
+      byId: {},
+      allIds: [],
+      allChannels: [],
+    },
     modal: {
-      show: false,
       postTitle: 'init',
       postDescription: 'init',
       postLink: 'init',
@@ -128,7 +128,7 @@ export default () => i18n().then(() => {
     return yup.string()
       .url('invalidUrl')
       .required('notEmptyString')
-      .notOneOf(state.urls, 'hasUrlYet')
+      .notOneOf(state.channels.allChannels, 'hasUrlYet')
       .validate(url);
   }
 
@@ -165,7 +165,7 @@ export default () => i18n().then(() => {
   function changeModalContent(modalState) {
     const { postTitle, postDescription, postLink } = modalState;
     modalTitle.textContent = postTitle;
-    modalBody.innerHTML = postDescription;
+    modalBody.textContent = postDescription;
     modalLinkButton.href = postLink;
   }
 
@@ -207,13 +207,11 @@ export default () => i18n().then(() => {
     const buttonId = '#modal';
     feedButton.setAttribute('data-target', buttonId);
     feedButton.addEventListener('click', () => {
-      const isModalShown = state.modal.show;
-      if (isModalShown === false) {
-        state.modal.postTitle = postTitle;
-        state.modal.postDescription = postDescription;
-        state.modal.postLink = postLink;
-        watchedState.modal.show = !isModalShown;
-      } state.modal.show = !isModalShown;
+      watchedState.modal = {
+        postTitle,
+        postDescription,
+        postLink,
+      };
     });
     postBody.appendChild(feedButton);
     feedLi.appendChild(postBody);
@@ -221,8 +219,29 @@ export default () => i18n().then(() => {
     return feedLi;
   }
 
-  function renderNewChannel(parsedUrl, id) {
-    const { title, description, postsList } = parsedUrl;
+  function watchChannel(channelId) {
+    const {
+      link, title, description, lastpubDate,
+    } = state.channels.byId[channelId];
+    axios.get(getQueryString(link)).then((response) => parseLink(response.data.contents))
+      .then((currentRssData) => {
+        const { postsList } = currentRssData;
+        const newPosts = postsList.filter((post) => post.pubDate > lastpubDate);
+        return newPosts.length !== 0 ? postsList : false;
+      }).then((postsList) => {
+        if (postsList !== false) {
+          const newPubDate = new Date();
+          state.channels.byId[channelId] = {
+            link, title, description, postsList, newPubDate,
+          };
+          watchedState.channels.allIds.push(channelId);
+        }
+      });
+    return setTimeout(watchChannel, 5000, channelId);
+  }
+
+  function renderNewChannel(channeId) {
+    const { title, description, postsList } = state.channels.byId[channeId];
     if (feedsContainer.children.length === 0) {
       const tatrgetDiv = feedsContainer;
       tatrgetDiv.textContent = '';
@@ -240,35 +259,11 @@ export default () => i18n().then(() => {
     newChannel.appendChild(newChannelHeader);
     newChannel.appendChild(channelDescription);
     const postsUl = document.createElement('ul');
-    postsUl.setAttribute('id', id);
+    postsUl.setAttribute('id', channeId);
     postsContainer.appendChild(postsUl);
     postsList.forEach((post) => postsUl.appendChild(creatPostLi(post)));
+    watchChannel(channeId);
     return feedsContainer.appendChild(newChannel);
-  }
-
-  function watchChannel(channelState) {
-    const { id, lastpubDate } = channelState;
-    axios.get(getQueryString(id)).then((response) => parseLink(response.data.contents))
-      .then((currentRssData) => {
-        const { postsList } = currentRssData;
-        const newPosts = postsList.filter((post) => post.pubDate > lastpubDate);
-        return newPosts;
-      }).then((newPosts) => {
-        if (newPosts.length !== 0) {
-          const parentUl = document.getElementById(id);
-          newPosts.map((post) => {
-            const newPostLi = creatPostLi(post);
-            parentUl.appendChild(newPostLi);
-            const newLastPubDate = new Date();
-            Array.from(state.channels).map((channel, i) => {
-              if (channel.id === id) {
-                watchedState.channels[i].pubDate = newLastPubDate;
-              }
-            });
-          });
-        }
-      });
-    return setTimeout(watchChannel, 5000, channelState);
   }
 
   const watchedState = onChange(state, (path, value) => {
@@ -282,17 +277,17 @@ export default () => i18n().then(() => {
       case 'form.processState':
         processStateHandler(value);
         break;
-      case 'channels':
-        watchChannel(value);
+      case 'channels.allIds':
+        renderNewChannel(value.pop());
         break;
-      case 'modal.show':
-        changeModalContent(state.modal);
+      case 'modal':
+        changeModalContent(value);
         break;
       case 'error':
         renderFeedback(value);
         break;
       default:
-        renderFeedback(`an unexpectable error, please contanct developer with this secret messageg: ${(path, value)}`);
+        renderFeedback(`an unexpectable error, please contanct developer with this messageg: path ${path}, value ${value}`);
     }
   });
 
@@ -301,20 +296,20 @@ export default () => i18n().then(() => {
     const formData = new FormData(e.target);
     formData.get('url');
     const { url } = Object.fromEntries(formData);
-    watchedState.form.fields.url = url;
     watchedState.form.processState = 'loading';
     validate(url).then((link) => axios.get(getQueryString(link))).then((response) => {
       const link = response.data.status.url;
-      const id = link;
+      const id = _.uniqueId();
       const prasedUrl = parseLink(response.data.contents);
-      renderNewChannel(prasedUrl, id);
       watchedState.form.processState = 'loaded';
-      const { postsList } = prasedUrl;
+      const { title, description, postsList } = prasedUrl;
       const date = new Date();
-      watchedState.channels = {
-        channel: link, id, postsList, lastpubDate: date,
+      const newChannel = {
+        link, title, description, postsList, lastpubDate: date,
       };
-      state.urls.push(link);
+      state.channels.byId[id] = newChannel;
+      state.channels.allChannels.push(link);
+      watchedState.channels.allIds.push(id);
       form.reset();
     })
       .catch((err) => {
