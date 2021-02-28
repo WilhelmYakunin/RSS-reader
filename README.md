@@ -1,5 +1,5 @@
 ### Hexlet tests and linter status:
-![Actions Status](/workflows/hexlet-check/badge.svg)
+[![hexlet-check](https://github.com/WilhelmYakunin/frontend-project-lvl3/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/WilhelmYakunin/frontend-project-lvl3/actions/workflows/hexlet-check.yml)
 
 <h1>Fine and easy RSS reader.</h1> 
 <p>Just input RSS link into input scope and enjoy reading news in fast format.</p>
