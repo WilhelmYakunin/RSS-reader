@@ -6,7 +6,7 @@
   "name": "@hexlet/code",
   "version": "1.0.0",
   "description": "rss watcher",
-  "main": "./src/index.js",
+  "main": "./src/init.js",
   "scripts": {
     "start": "webpack-dev-server -d --hot --config webpack.config.cjs --watch"
   },
