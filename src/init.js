@@ -87,7 +87,7 @@ export default () => i18n().then(() => {
     }
   }
 
-  renderLngContent();
+  renderLngContent('ru');
 
   function renderFeedback(info) {
     switch (info) {
