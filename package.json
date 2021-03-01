@@ -3,7 +3,7 @@
     "type": "git",
     "url": "git+https://github.com/WilhelmYakunin/frontend-project-lvl3.git"
   },
-  "name": "frontend-project-lvl3",
+  "name": "@hexlet/code",
   "version": "1.0.0",
   "description": "rss watcher",
   "main": "index.html",
