@@ -8,7 +8,7 @@ export default {
     footerText: 'разработка сайта',
     loading: 'канал загружается...',
     notEmptyString: 'введите не пустой адрес',
-    loaded: 'RSS успешно дабавлен',
+    loaded: 'RSS успешно загружен',
     feedsHeader: 'Ленты',
     feeds: 'каналы не добавлены',
     lngToggler: 'Языки',
