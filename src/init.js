@@ -222,7 +222,6 @@ export default () => {
   }
 
   function renderNewChannel(channeId) {
-    console.log(state.channels.byId, channeId)
     const { title, description, postsList } = state.channels.byId[channeId];
     if (feedsContainer.children.length === 0) {
       const tatrgetDiv = feedsContainer;
@@ -300,7 +299,7 @@ export default () => {
     formData.get('url');
     const { url } = Object.fromEntries(formData);
     watchedState.form.processState = 'loading';
-    validate(url).then((link) => axios.get(getQueryString(link))).then((response) => {
+    validate(url).then((link) => {
       const link = response.data.status.url;
       const id = _.uniqueId();
       const prasedUrl = parseLink(response.data.contents);
