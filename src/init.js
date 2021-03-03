@@ -5,7 +5,7 @@ import axios from 'axios';
 import _ from 'lodash';
 import { i18n, languages } from './locales/i18nEngine';
 import parseLink from './parse.js';
-import nock from "nock";
+import { Octokit } from '@octokit/rest';
 
 export default () => i18n().then(() => {
   const routes = {
@@ -298,12 +298,14 @@ export default () => i18n().then(() => {
     formData.get('url');
     const { url } = Object.fromEntries(formData);
     watchedState.form.processState = 'loading';
-    nock.enableNetConnect();
-    validate(url).then((link) => axios.get(getQueryString(link))).then((response) => {      
-      const link = response.data.status.url;
+    validate(url).then((link) => {
+      const fakeRss = new Octokit();
+      return fakeRss.repos.get(link);
+    }).then((response) => {
+      console.log(response)
+      const link = response.url;
       const id = _.uniqueId();
-      const prasedUrl = parseLink(response.data.contents);
-      watchedState.form.processState = 'loaded';
+      const prasedUrl = parseLink(response.data);
       const { title, description, postsList } = prasedUrl;
       const date = new Date();
       const newChannel = {
@@ -313,20 +315,19 @@ export default () => i18n().then(() => {
       state.channels.allChannels.push(link);
       watchedState.channels.allIds.push(id);
       form.reset();
-    })
-      .catch((err) => {
-        if (err.message === "Cannot read property 'querySelector' of null") {
-          watchedState.form.processError = 'notRss';
-          watchedState.form.processState = 'failed';
-          return;
-        } if (err.message === 'Network Error') {
-          watchedState.form.processError = 'network';
-          watchedState.form.processState = 'failed';
-          return;
-        }
-        watchedState.form.processError = err.message;
+    }).catch((err) => {
+      if (err.message === "Cannot read property 'querySelector' of null") {
+        watchedState.form.processError = 'notRss';
         watchedState.form.processState = 'failed';
-      });
+        return;
+      } if (err.message === 'Network Error') {
+        watchedState.form.processError = 'network';
+        watchedState.form.processState = 'failed';
+        return;
+      }
+      watchedState.form.processError = err.message;
+      watchedState.form.processState = 'failed';
+    });
   });
 
   urlInput.addEventListener('input', () => {
