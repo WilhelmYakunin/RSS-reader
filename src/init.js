@@ -8,10 +8,9 @@ import parseLink from './parse.js';
 
 export default () => i18n().then(() => {
   const routes = {
-    hostName: () => 'https://',
-    queryPath: () => 'api.allorigins.win/get?url=',
+    queryPath: () => 'https://api.allorigins.win/get?url=',
   };
-  const getQueryString = (queryParametr) => `${routes.hostName()}${routes.queryPath()}${queryParametr}`;
+  const getQueryString = (queryParametr) => `${routes.queryPath()}${queryParametr}`;
 
   const siteHeader = document.getElementById('main-header');
   const siteDescription = document.querySelector('[role="banner-role"]');
@@ -299,7 +298,7 @@ export default () => i18n().then(() => {
     const { url } = Object.fromEntries(formData);
     watchedState.form.processState = 'loading';
     validate(url).then((link) => {
-      watchedState.form.processState = 'loaded';
+      console.log(link, state);
       axios.get(getQueryString(link)).then((response) => {
         const link = response.data.status.url;
         const id = _.uniqueId();
@@ -311,6 +310,7 @@ export default () => i18n().then(() => {
         };
         state.channels.byId[id] = newChannel;
         state.channels.allChannels.push(link);
+        watchedState.form.processState = 'loaded';
         watchedState.channels.allIds.push(id);
         form.reset();
       });
