@@ -302,11 +302,9 @@ export default () => {
       return fetch(getQueryString(link))
     })
       .then((response) => {
-        console.log(response, '1')
         if (response.ok) return response.json();
       })
       .then((data) => {
-        console.log(2, data);
         const id = _.uniqueId();
         const prasedUrl = parseLink(data.contents);
         const { title, description, postsList } = prasedUrl;
@@ -320,7 +318,7 @@ export default () => {
         form.reset();
       })
       .catch((err) => {
-      console.log(err. err.message)
+      console.log(err, err.message)
         if (err.message === "Cannot read property 'querySelector' of null") {
           watchedState.form.processError = 'notRss';
           watchedState.form.processState = 'failed';
