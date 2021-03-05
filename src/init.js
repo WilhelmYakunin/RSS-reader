@@ -7,11 +7,11 @@ import { i18n, languages } from './locales/i18nEngine';
 import parseLink from './parse.js';
 import { Octokit } from '@octokit/rest';
 
-export default () => i18n().then(() => {
+export default () => {
   const routes = {
-    queryPath: () => 'https://api.allorigins.win/get?url=',
+    queryPath: () => 'https://hexlet-allorigins.herokuapp.com/get?url=',
   };
-  const getQueryString = (queryParametr) => `${routes.queryPath()}${queryParametr}`;
+  const getQueryString = (queryParametr) => `${routes.queryPath()}${encodeURIComponent(queryParametr)}`;
 
   const siteHeader = document.getElementById('main-header');
   const siteDescription = document.querySelector('[role="banner-role"]');
@@ -88,7 +88,7 @@ export default () => i18n().then(() => {
     }
   }
 
-  renderLngContent();
+  i18n().then(() =>renderLngContent());
 
   function renderFeedback(info) {
     switch (info) {
@@ -298,14 +298,14 @@ export default () => i18n().then(() => {
     formData.get('url');
     const { url } = Object.fromEntries(formData);
     watchedState.form.processState = 'loading';
-    validate(url).then((link) => {
-      const fakeRss = new Octokit();
-      return fakeRss.repos.get(link);
-    }).then((response) => {
-      console.log(response)
-      const link = response.url;
+    validate(url).then((link) => fetch(getQueryString(link)))
+    .then((response) => {
+      if (response.ok) return response.json();
+    })
+    .then((data) => {
+      const link = data.status.url;
       const id = _.uniqueId();
-      const prasedUrl = parseLink(response.data);
+      const prasedUrl = parseLink(data.contents);
       const { title, description, postsList } = prasedUrl;
       const date = new Date();
       const newChannel = {
@@ -313,6 +313,7 @@ export default () => i18n().then(() => {
       };
       state.channels.byId[id] = newChannel;
       state.channels.allChannels.push(link);
+      watchedState.form.processState = 'loaded';
       watchedState.channels.allIds.push(id);
       form.reset();
     }).catch((err) => {
@@ -348,6 +349,4 @@ export default () => i18n().then(() => {
     const lngButton = document.querySelector(`[data-lng="${lng}"]`);
     return lngButton.addEventListener('click', handleSwitchLanguage);
   });
-});
-
-
+};
