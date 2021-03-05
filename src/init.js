@@ -9,7 +9,7 @@ import parseLink from './parse.js';
 
 export default () => {
   const routes = {
-    queryPath: () => 'https://hexlet-allorigins.herokuapp.com/get?url=',
+    queryPath: () => 'https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=',
   };
   const getQueryString = (queryParametr) => `${routes.queryPath()}${encodeURIComponent(queryParametr)}`;
 
