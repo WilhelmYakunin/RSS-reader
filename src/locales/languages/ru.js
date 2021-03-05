@@ -21,7 +21,7 @@ export default {
     network: 'Проблемы с сетью. Попробуйте снова',
     notRss: 'ссылка не является ссылкой на RSS канал',
     hasUrlYet: 'RSS уже существует',
-    invalidUrl: 'Введенный URL некорректен',
+    invalidUrl: 'Ссылка должна быть валидным URL',
     init: '',
     languageError: 'ошибка инициализации языка',
   },
