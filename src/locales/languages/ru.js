@@ -20,7 +20,7 @@ export default {
     modalCloseButton: 'Закрыть',
     network: 'Проблемы с сетью. Попробуйте снова',
     notRss: 'ссылка не является ссылкой на RSS канал',
-    hasUrlYet: 'Данный URL уже добавлен',
+    hasUrlYet: 'RSS уже существует',
     invalidUrl: 'Введенный URL некорректен',
     init: '',
     languageError: 'ошибка инициализации языка',
