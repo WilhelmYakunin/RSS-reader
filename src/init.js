@@ -318,7 +318,7 @@ export default () => {
         form.reset();
       })
       .catch((err) => {
-      console.log(err, err.message)
+      console.log(err, err.name, err.message)
         if (err.message === "Cannot read property 'querySelector' of null") {
           watchedState.form.processError = 'notRss';
           watchedState.form.processState = 'failed';
