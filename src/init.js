@@ -12,7 +12,6 @@ export default () => {
     queryPath: () => 'https://hexlet-allorigins.herokuapp.com/get?disableCache=true&url=',
   };
   const getQueryString = (queryParametr) => `${routes.queryPath()}${encodeURIComponent(queryParametr)}`;
-
   const siteHeader = document.getElementById('main-header');
   const siteDescription = document.querySelector('[role="banner-role"]');
   const feedsHeader = document.querySelector('[id="feeds-header"]');
@@ -88,7 +87,7 @@ export default () => {
     }
   }
 
-  i18n().then(() =>renderLngContent());
+  i18n().then(() => renderLngContent('ru'));
 
   function renderFeedback(info) {
     switch (info) {
@@ -299,36 +298,39 @@ export default () => {
     const { url } = Object.fromEntries(formData);
     watchedState.form.processState = 'loading';
     validate(url).then((link) => fetch(getQueryString(link)))
-    .then((response) => {
-      if (response.ok) return response.json();
-    })
-    .then((data) => {
-      const link = data.status.url;
-      const id = _.uniqueId();
-      const prasedUrl = parseLink(data.contents);
-      const { title, description, postsList } = prasedUrl;
-      const date = new Date();
-      const newChannel = {
-        link, title, description, postsList, lastpubDate: date,
-      };
-      state.channels.byId[id] = newChannel;
-      state.channels.allChannels.push(link);
-      watchedState.form.processState = 'loaded';
-      watchedState.channels.allIds.push(id);
-      form.reset();
-    }).catch((err) => {
-      if (err.message === "Cannot read property 'querySelector' of null") {
-        watchedState.form.processError = 'notRss';
+      .then((response) => {
+        console.log(response, '1')
+        if (response.ok) return response.json();
+      })
+      .then((data) => {
+        console.log(2, data)
+        const link = data.status.url;
+        const id = _.uniqueId();
+        const prasedUrl = parseLink(data.contents);
+        const { title, description, postsList } = prasedUrl;
+        const date = new Date();
+        const newChannel = {
+          link, title, description, postsList, lastpubDate: date,
+        };
+        state.channels.byId[id] = newChannel;
+        state.channels.allChannels.push(link);
+        watchedState.form.processState = 'loaded';
+        watchedState.channels.allIds.push(id);
+        form.reset();
+      })
+      .catch((err) => {
+        if (err.message === "Cannot read property 'querySelector' of null") {
+          watchedState.form.processError = 'notRss';
+          watchedState.form.processState = 'failed';
+          return;
+        } if (err.message === 'Network Error') {
+          watchedState.form.processError = 'network';
+          watchedState.form.processState = 'failed';
+          return;
+        }
+        watchedState.form.processError = err.message;
         watchedState.form.processState = 'failed';
-        return;
-      } if (err.message === 'Network Error') {
-        watchedState.form.processError = 'network';
-        watchedState.form.processState = 'failed';
-        return;
-      }
-      watchedState.form.processError = err.message;
-      watchedState.form.processState = 'failed';
-    });
+      });
   });
 
   urlInput.addEventListener('input', () => {
