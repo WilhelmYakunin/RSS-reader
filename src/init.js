@@ -297,25 +297,26 @@ export default () => {
     formData.get('url');
     const { url } = Object.fromEntries(formData);
     watchedState.form.processState = 'loading';
-    validate(url).then((link) => fetch(getQueryString(link)))
+    validate(url).then((link) => {
+      state.channels.allChannels.push(link);
+      return fetch(getQueryString(link))
+    })
       .then((response) => {
         console.log(response, '1')
         if (response.ok) return response.json();
       })
       .then((data) => {
-        console.log(2, data)
-        const link = data.status.url;
+        console.log(2, data);
         const id = _.uniqueId();
         const prasedUrl = parseLink(data.contents);
         const { title, description, postsList } = prasedUrl;
         const date = new Date();
         const newChannel = {
-          link, title, description, postsList, lastpubDate: date,
+          title, description, postsList, lastpubDate: date,
         };
         state.channels.byId[id] = newChannel;
-        state.channels.allChannels.push(link);
         watchedState.form.processState = 'loaded';
-        watchedState.channels.allIds.push(id);
+        // watchedState.channels.allIds.push(id);
         form.reset();
       })
       .catch((err) => {
