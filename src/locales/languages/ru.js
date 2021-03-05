@@ -18,7 +18,7 @@ export default {
     preview: 'Кратко',
     modalLinkButton: 'Прочесть новость',
     modalCloseButton: 'Закрыть',
-    network: 'Проблемы с сетью. Попробуйте снова',
+    network: 'Ошибка сети',
     notRss: 'Ресурс не содержит валидный RSS',
     hasUrlYet: 'RSS уже существует',
     invalidUrl: 'Ссылка должна быть валидным URL',
