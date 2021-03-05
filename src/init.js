@@ -323,7 +323,7 @@ export default () => {
           watchedState.form.processError = 'notRss';
           watchedState.form.processState = 'failed';
           return;
-        } if (err.message === 'Network Error') {
+        } if (err.name === 'FetchError') {
           watchedState.form.processError = 'network';
           watchedState.form.processState = 'failed';
           return;
