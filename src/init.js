@@ -187,11 +187,11 @@ export default () => {
     feedLink.setAttribute('target', '_blank');
     feedLink.href = postLink;
     feedLink.textContent = postTitle;
-    // feedLink.classList.add('font-weight-bold');
+    feedLink.classList.add('font-weight-bold');
     feedLink.addEventListener('click', (e) => {
       e.preventDefault();
+      feedLink.classList.remove('font-weight-bold');
       window.open(postLink);
-      // feedLink.classList.remove('font-weight-bold');
     });
     postHeader.appendChild(feedLink);
     const feedDescription = document.createElement('p');
