@@ -136,13 +136,16 @@ export default () => {
     switch (processState) {
       case 'init: ready for processing':
         submitButton.disabled = false;
+        urlInput.readonly = false;
         break;
       case 'loading':
         submitButton.disabled = true;
         renderFeedback(processState);
+        urlInput.readonly = true;
         break;
       case 'failed':
         submitButton.disabled = false;
+        urlInput.readonly = false;
         renderProcessErrors(state.form.processError);
         break;
       case 'filing':
