@@ -15,7 +15,7 @@ export default {
     panelButton: 'показать',
     panelClose: 'скрыть',
     posts: 'Ваши посты',
-    preview: 'Кратко',
+    preview: 'Просмотр',
     modalLinkButton: 'Прочесть новость',
     modalCloseButton: 'Закрыть',
     network: 'Ошибка сети',
