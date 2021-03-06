@@ -313,15 +313,14 @@ export default () => {
         const { title, description, postsList } = prasedUrl;
         const date = new Date();
         const newChannel = {
-          title, description, postsList, lastpubDate: date,
+          id, title, description, postsList, lastpubDate: date,
         };
         state.channels.byId[id] = newChannel;
         watchedState.form.processState = 'loaded';
-        // watchedState.channels.allIds.push(id);
+        watchedState.channels.allIds.push(id);
         form.reset();
       })
       .catch((err) => {
-      console.log(err, err.name, err.message)
         if (err.message === "Cannot read property 'querySelector' of null") {
           watchedState.form.processError = 'notRss';
           watchedState.form.processState = 'failed';
