@@ -265,7 +265,7 @@ export default () => {
     postsUl.setAttribute('id', channeId);
     postsContainer.appendChild(postsUl);
     postsList.forEach((post) => postsUl.appendChild(creatPostLi(post)));
-    watchChannel(channeId);
+    // watchChannel(channeId);
     return feedsContainer.appendChild(newChannel);
   }
 
