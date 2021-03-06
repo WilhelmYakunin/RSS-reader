@@ -136,16 +136,15 @@ export default () => {
     switch (processState) {
       case 'init: ready for processing':
         submitButton.disabled = false;
-        urlInput.readonly = false;
         break;
       case 'loading':
         submitButton.disabled = true;
         renderFeedback(processState);
-        urlInput.readonly = true;
+        urlInput.setAttribute('readonly', 'readonly');
         break;
       case 'failed':
         submitButton.disabled = false;
-        urlInput.readonly = false;
+        urlInput.removeAttribute('readonly');
         renderProcessErrors(state.form.processError);
         break;
       case 'filing':
@@ -153,6 +152,7 @@ export default () => {
         break;
       case 'loaded':
         submitButton.disabled = false;
+        urlInput.removeAttribute('readonly');
         renderFeedback(processState);
         break;
       default:
