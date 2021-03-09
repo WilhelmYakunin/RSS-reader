@@ -190,9 +190,7 @@ export default () => {
     feedLink.classList.add('font-weight-bold');
     feedLink.addEventListener('click', (e) => {
       e.preventDefault();
-      console.log(feedLink);
       feedLink.classList.remove('font-weight-bold');
-       console.log(feedLink);
       window.open(postLink);
     });
     postHeader.appendChild(feedLink);
@@ -212,6 +210,7 @@ export default () => {
     const buttonId = '#modal';
     feedButton.setAttribute('data-target', buttonId);
     feedButton.addEventListener('click', () => {
+      feedLink.classList.remove('font-weight-bold');
       watchedState.modal = {
         postTitle,
         postDescription,
