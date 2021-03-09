@@ -43,11 +43,6 @@ export default () => {
       allIds: [],
       allChannels: [],
     },
-    modal: {
-      postTitle: 'init',
-      postDescription: 'init',
-      postLink: 'init',
-    },
   };
 
   const elemArr = {
@@ -211,37 +206,16 @@ export default () => {
     feedButton.setAttribute('data-target', buttonId);
     feedButton.addEventListener('click', () => {
       feedLink.classList.remove('font-weight-bold');
-      watchedState.modal = {
+      changeModalContent({
         postTitle,
         postDescription,
         postLink,
-      };
+      });
     });
     postBody.appendChild(feedButton);
     feedLi.appendChild(postBody);
 
     return feedLi;
-  }
-
-  function watchChannel(channelId) {
-    const {
-      link, title, description, lastpubDate,
-    } = state.channels.byId[channelId];
-    axios.get(getQueryString(link)).then((response) => parseLink(response.data.contents))
-      .then((currentRssData) => {
-        const { postsList } = currentRssData;
-        const newPosts = postsList.filter((post) => post.pubDate > lastpubDate);
-        return newPosts.length !== 0 ? postsList : false;
-      }).then((postsList) => {
-        if (postsList !== false) {
-          const newPubDate = new Date();
-          state.channels.byId[channelId] = {
-            link, title, description, postsList, newPubDate,
-          };
-          watchedState.channels.allIds.push(channelId);
-        }
-      });
-    return setTimeout(watchChannel, 5000, channelId);
   }
 
   function renderNewChannel(channeId) {
@@ -266,8 +240,30 @@ export default () => {
     postsUl.setAttribute('id', channeId);
     postsContainer.appendChild(postsUl);
     postsList.forEach((post) => postsUl.appendChild(creatPostLi(post)));
-    // watchChannel(channeId);
     return feedsContainer.appendChild(newChannel);
+  }
+
+  function watchChannel(channelId) {
+    const {
+      url, title, description, lastpubDate,
+    } = state.channels.byId[channelId];
+    fetch(getQueryString(url)).then((response) => response.json())
+      .then((data) => parseLink(data.contents))
+      .then((currentRssData) => {
+        const { postsList } = currentRssData;
+        const newPosts = postsList.filter((post) => post.pubDate > lastpubDate);
+        return newPosts.length !== 0 ? postsList : false;
+      })
+      .then((postsList) => {
+        if (postsList !== false) {
+          const newPubDate = new Date();
+          state.channels.byId[channelId] = {
+            url, title, description, postsList, newPubDate,
+          };
+          renderNewChannel(channelId);
+        }
+      });
+    return setTimeout(watchChannel, 5000, channelId);
   }
 
   const watchedState = onChange(state, (path, value) => {
@@ -284,14 +280,14 @@ export default () => {
       case 'channels.allIds':
         renderNewChannel(value.pop());
         break;
-      case 'modal':
-        changeModalContent(value);
+      case 'channels.allChannels':
+        watchChannel(value.pop());
         break;
       case 'error':
         renderFeedback(value);
         break;
       default:
-        renderFeedback(`an unexpectable error, please contanct developer with this messageg: path ${path}, value ${path, value}`);
+        renderFeedback(`an unexpectable error, please contanct developer with this messageg: path ${path}, value ${value}`);
     }
   });
 
@@ -301,22 +297,18 @@ export default () => {
     formData.get('url');
     const { url } = Object.fromEntries(formData);
     watchedState.form.processState = 'loading';
-    validate(url).then((link) => {
-      state.channels.allChannels.push(link);
-      return fetch(getQueryString(link))
-    })
-      .then((response) => {
-        if (response.ok) return response.json();
-      })
+    validate(url).then(() => fetch(getQueryString(url)))
+      .then((response) => response.json())
       .then((data) => {
         const id = _.uniqueId();
         const prasedUrl = parseLink(data.contents);
         const { title, description, postsList } = prasedUrl;
         const date = new Date();
         const newChannel = {
-          id, title, description, postsList, lastpubDate: date,
+          url, id, title, description, postsList, lastpubDate: date,
         };
         state.channels.byId[id] = newChannel;
+        state.channels.allChannels.push(url);
         watchedState.form.processState = 'loaded';
         watchedState.channels.allIds.push(id);
         form.reset();
