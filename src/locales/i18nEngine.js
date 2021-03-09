@@ -28,7 +28,6 @@ const i18n = () => i18next
       de,
     },
   }, (err, t) => {
-    if (err) console.log('something went wrong loading language settings', err);
     t('languageError');
   });
 
