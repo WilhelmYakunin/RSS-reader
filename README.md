@@ -1,8 +1,9 @@
 ### Hexlet tests and linter status:
 [![hexlet-check](https://github.com/WilhelmYakunin/frontend-project-lvl3/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/WilhelmYakunin/frontend-project-lvl3/actions/workflows/hexlet-check.yml)
 
-<h1>Fine and easy RSS reader.</h1> 
-<p>Just input RSS link into input scope and enjoy reading news in fast format.</p>
+<h1>Fine and easy RSS reader.</h1>
+<p>Just put RSS link into input scope and enjoy reading news in fast format.</p>
+<p>Three languages interface</p>
 
 <ul> 
 <h2>The examples of channles:</h2>
