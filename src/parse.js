@@ -1,12 +1,8 @@
-export default (xml) => {
+const parse = (document) => {
   const domParser = new DOMParser();
-  const doc = domParser.parseFromString(`${xml.contents}`, 'application/xml');
+
+  const doc = domParser.parseFromString(`${document}`, 'application/xml');
   const channel = doc.querySelector('channel');
-
-  const channelMapping = ['title', 'description', 'item'];
-
-  const parsedChannel = channelMapping.map((tag) => channel.querySelectorAll(tag));
-  console.log(parsedChannel);
 
   const title = channel.querySelector('title').textContent;
   const description = channel.querySelector('description').textContent;
@@ -16,9 +12,12 @@ export default (xml) => {
     const postTitle = post.querySelector('title').textContent;
     const postDescription = post.querySelector('description').textContent;
     const postLink = post.querySelector('link').textContent;
+
     return {
       pubDate, postTitle, postDescription, postLink,
     };
   });
   return { title, description, postsList };
 };
+
+export default parse;

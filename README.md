@@ -1,9 +1,14 @@
 ### Hexlet tests and linter status:
-![Actions Status](/workflows/hexlet-check/badge.svg)
+[![hexlet-check](https://github.com/WilhelmYakunin/frontend-project-lvl3/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/WilhelmYakunin/frontend-project-lvl3/actions/workflows/hexlet-check.yml)
 
-<h2>Project health</h2>
-<ol>
-<li><a href="https://codeclimate.com/github/WilhelmYakunin/frontend-project-lvl3/maintainability"><img src="https://api.codeclimate.com/v1/badges/a791967c4d8df257d08f/maintainability" /></a></li>
+<h1>Fine and easy RSS reader.</h1> 
+<p>Just input RSS link into input scope and enjoy reading news in fast format.</p>
 
-<li><a href="https://github.com/WilhelmYakunin/frontend-project-lvl3/actions"><img src="https://github.com/WilhelmYakunin/frontend-project-lvl3/workflows/rss%20generator%20project%20of%20lvl-3/badge.svg" alt="Difference finder" style="max-width:100%;"></a></li>
-</ol>
+<ul> 
+<h2>The examples of channles:</h2>
+<li>https://ru.hexlet.io/lessons.rss</li>
+<li>http://www.infoworld.com/index.rss</li>
+<li>https://motor.ru/exports/rss</li>
+</ul>
+
+<a href="rss-theta.vercel.app" target="_blank">Try the app</a>
