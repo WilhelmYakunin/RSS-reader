@@ -176,7 +176,6 @@ export default () => {
       feedLink.classList.remove('font-weight-bold');
       window.open(postLink);
     });
-
     postHeader.appendChild(feedLink);
     const feedDescription = document.createElement('p');
     const pubDateSlioceToElements = 5;
